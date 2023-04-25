@@ -15,13 +15,6 @@ export default async function openStatusCheck(): Promise<number> {
     head_sha: SHA,
     status: 'in_progress',
     name: checkName,
-    /**
-     * The check run API is still in beta and the developer preview must be opted into
-     * See https://developer.github.com/changes/2018-05-07-new-checks-api-public-beta/
-     */
-    mediaType: {
-      previews: ['antiope'],
-    },
   })
 
   // Return the status check ID

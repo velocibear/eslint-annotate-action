@@ -27,12 +27,5 @@ export default async function closeStatusCheck(
       summary: summary,
       text: text,
     },
-    /**
-     * The check run API is still in beta and the developer preview must be opted into
-     * See https://developer.github.com/changes/2018-05-07-new-checks-api-public-beta/
-     */
-    mediaType: {
-      previews: ['antiope'],
-    },
   })
 }

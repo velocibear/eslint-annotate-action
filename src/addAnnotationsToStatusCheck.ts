@@ -41,13 +41,6 @@ export default async function addAnnotationsToStatusCheck(
           summary: batchMessage,
           annotations: annotationBatch,
         },
-        /**
-         * The check run API is still in beta and the developer preview must be opted into
-         * See https://developer.github.com/changes/2018-05-07-new-checks-api-public-beta/
-         */
-        mediaType: {
-          previews: ['antiope'],
-        },
       })
       checkUpdatePromises.push(currentCheckPromise)
     } catch (err) {

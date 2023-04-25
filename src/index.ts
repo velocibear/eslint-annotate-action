@@ -4,6 +4,7 @@ import eslintJsonReportToJs from './eslintJsonReportToJs'
 import getAnalyzedReport from './getAnalyzedReport'
 import openStatusCheck from './openStatusCheck'
 import closeStatusCheck from './closeStatusCheck'
+import fetchStatusCheck from './fetchStatusCheck'
 import addAnnotationsToStatusCheck from './addAnnotationsToStatusCheck'
 import getPullRequestChangedAnalyzedReport from './getPullRequestChangedAnalyzedReport'
 import addSummary from './addSummary'
@@ -26,8 +27,10 @@ Toolkit.run(async (tools) => {
   core.setOutput('warningCount', analyzedReport.warningCount)
 
   try {
-    // Create a new, in-progress status check
-    const checkId = await openStatusCheck()
+    // // Create a new, in-progress status check
+    // const checkId = await openStatusCheck()
+
+    const checkId = await fetchStatusCheck()
 
     // Add all the annotations to the status check
     await addAnnotationsToStatusCheck(annotations, checkId)
