@@ -20207,13 +20207,6 @@ async function addAnnotationsToStatusCheck(annotations, checkId) {
                     summary: batchMessage,
                     annotations: annotationBatch,
                 },
-                /**
-                 * The check run API is still in beta and the developer preview must be opted into
-                 * See https://developer.github.com/changes/2018-05-07-new-checks-api-public-beta/
-                 */
-                mediaType: {
-                    previews: ['antiope'],
-                },
             });
             checkUpdatePromises.push(currentCheckPromise);
         }
@@ -20308,13 +20301,6 @@ async function closeStatusCheck(conclusion, checkId, summary, text) {
             summary: summary,
             text: text,
         },
-        /**
-         * The check run API is still in beta and the developer preview must be opted into
-         * See https://developer.github.com/changes/2018-05-07-new-checks-api-public-beta/
-         */
-        mediaType: {
-            previews: ['antiope'],
-        },
     });
 }
 exports["default"] = closeStatusCheck;
@@ -20362,7 +20348,6 @@ const areTesting = process.env.NODE_ENV === 'test';
 const isGitHubActions = process.env.GITHUB_ACTIONS;
 const githubToken = isGitHubActions && !areTesting ? core.getInput('repo-token', { required: true }) : process.env.GITHUB_TOKEN;
 const octokit = new rest_1.Octokit({
-    previews: ['antiope'],
     auth: githubToken,
 });
 const tools = new actions_toolkit_1.Toolkit({
@@ -20421,37 +20406,6 @@ exports["default"] = {
 
 /***/ }),
 
-/***/ 7042:
-/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
-
-"use strict";
-
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-const constants_1 = __importDefault(__nccwpck_require__(9042));
-const { octokit } = constants_1.default;
-/**
- * Create a new GitHub check run
- * @param options octokit.checks.create parameters
- */
-async function createStatusCheck(options) {
-    try {
-        // https://developer.github.com/v3/checks/runs/#create-a-check-run
-        // https://octokit.github.io/rest.js/v16#checks-create
-        const response = await octokit.checks.create(options);
-        return Promise.resolve(response.data);
-    }
-    catch (error) {
-        return Promise.reject(error);
-    }
-}
-exports["default"] = createStatusCheck;
-
-
-/***/ }),
-
 /***/ 1036:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -20483,6 +20437,40 @@ function eslintJsonReportToJs(reportFile) {
     return reportParsed;
 }
 exports["default"] = eslintJsonReportToJs;
+
+
+/***/ }),
+
+/***/ 3490:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const constants_1 = __importDefault(__nccwpck_require__(9042));
+const { OWNER, REPO, SHA, octokit } = constants_1.default;
+/**
+ * Fetch GitHub check run
+ * @return the check ID of the created run
+ */
+async function fetchStatusCheck() {
+    var _a;
+    const check = await octokit.request('GET /repos/{owner}/{repo}/commits/{ref}/check-runs', {
+        owner: OWNER,
+        repo: REPO,
+        ref: SHA,
+        headers: {
+            'X-GitHub-Api-Version': '2022-11-28',
+        },
+    });
+    console.log('check', check);
+    // Return the status check ID
+    return (_a = check.data.check_runs) === null || _a === void 0 ? void 0 : _a[0].id;
+}
+exports["default"] = fetchStatusCheck;
 
 
 /***/ }),
@@ -20742,8 +20730,8 @@ const actions_toolkit_1 = __nccwpck_require__(7045);
 const core = __importStar(__nccwpck_require__(2186));
 const eslintJsonReportToJs_1 = __importDefault(__nccwpck_require__(1036));
 const getAnalyzedReport_1 = __importDefault(__nccwpck_require__(8481));
-const openStatusCheck_1 = __importDefault(__nccwpck_require__(7829));
 const closeStatusCheck_1 = __importDefault(__nccwpck_require__(7345));
+const fetchStatusCheck_1 = __importDefault(__nccwpck_require__(3490));
 const addAnnotationsToStatusCheck_1 = __importDefault(__nccwpck_require__(822));
 const getPullRequestChangedAnalyzedReport_1 = __importDefault(__nccwpck_require__(6474));
 const addSummary_1 = __importDefault(__nccwpck_require__(5577));
@@ -20762,8 +20750,9 @@ actions_toolkit_1.Toolkit.run(async (tools) => {
     core.setOutput('errorCount', analyzedReport.errorCount);
     core.setOutput('warningCount', analyzedReport.warningCount);
     try {
-        // Create a new, in-progress status check
-        const checkId = await (0, openStatusCheck_1.default)();
+        // // Create a new, in-progress status check
+        // const checkId = await openStatusCheck()
+        const checkId = await (0, fetchStatusCheck_1.default)();
         // Add all the annotations to the status check
         await (0, addAnnotationsToStatusCheck_1.default)(annotations, checkId);
         // Add report to job summary
@@ -20791,47 +20780,6 @@ actions_toolkit_1.Toolkit.run(async (tools) => {
     // If we got this far things were a success
     tools.exit.success('ESLint report analysis complete. No errors found!');
 });
-
-
-/***/ }),
-
-/***/ 7829:
-/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
-
-"use strict";
-
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-const createStatusCheck_1 = __importDefault(__nccwpck_require__(7042));
-const constants_1 = __importDefault(__nccwpck_require__(9042));
-const { OWNER, REPO, SHA, getTimestamp, checkName } = constants_1.default;
-/**
- * Open a new, in-progress GitHub check run
- * @return the check ID of the created run
- */
-async function openStatusCheck() {
-    // Create a new status check and leave it in-progress
-    const createCheckResponse = await (0, createStatusCheck_1.default)({
-        owner: OWNER,
-        repo: REPO,
-        started_at: getTimestamp(),
-        head_sha: SHA,
-        status: 'in_progress',
-        name: checkName,
-        /**
-         * The check run API is still in beta and the developer preview must be opted into
-         * See https://developer.github.com/changes/2018-05-07-new-checks-api-public-beta/
-         */
-        mediaType: {
-            previews: ['antiope'],
-        },
-    });
-    // Return the status check ID
-    return createCheckResponse.id;
-}
-exports["default"] = openStatusCheck;
 
 
 /***/ }),
