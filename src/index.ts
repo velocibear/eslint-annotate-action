@@ -26,10 +26,10 @@ Toolkit.run(async (tools) => {
   core.setOutput('warningCount', analyzedReport.warningCount)
 
   try {
-    // // Create a new, in-progress status check
-    // const checkId = await openStatusCheck()
-
+    // Fetch status check for current job
     const checkId = await fetchStatusCheck()
+
+    console.log('checkId', checkId)
 
     // Add all the annotations to the status check
     await addAnnotationsToStatusCheck(annotations, checkId)

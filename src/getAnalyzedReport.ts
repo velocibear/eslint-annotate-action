@@ -102,6 +102,10 @@ export default function getAnalyzedReport(files: ESLintReport): AnalyzedESLintRe
       } else {
         errorText += messageText
       }
+
+      // Log out errors to make it easy for users to find out what's going on
+      toolkit.log.info(`Error link: ${link}`)
+      toolkit.log.info(`Error message: ${messageText}`)
     }
   }
 
