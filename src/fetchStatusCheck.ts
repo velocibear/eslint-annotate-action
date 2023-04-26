@@ -21,6 +21,9 @@ export default async function fetchStatusCheck(): Promise<number | undefined> {
     console.log("process.env['GITHUB_EVENT_NAME']", process.env['GITHUB_EVENT_NAME'])
     console.log("process.env['GITHUB_JOB']", process.env['GITHUB_JOB'])
     console.log("process.env['GITHUB_RUN_ID']", process.env['GITHUB_RUN_ID'])
+
+    console.log('response.data', response.data)
+
     const currentCheck = response.data.find((check) => check.name === process.env['GITHUB_JOB'])
     console.log(currentCheck)
 
