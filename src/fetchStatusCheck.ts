@@ -6,7 +6,18 @@ const {OWNER, REPO, SHA, octokit} = constants
  * @return the check ID of the created run
  */
 export default async function fetchStatusCheck(): Promise<number | undefined> {
-  const parameters = {
+  const jobParameters = {
+    owner: OWNER,
+    repo: REPO,
+    run_id: Number(process.env['GITHUB_RUN_ID']),
+    per_page: 100,
+  }
+
+  const response = await octokit.paginate('GET /repos/{owner}/{repo}/actions/runs/{run_id}/jobs', jobParameters)
+  console.log('response', response)
+  console.log('jobs', response.jobs)
+
+  const checkParameters = {
     owner: OWNER,
     repo: REPO,
     ref: SHA,
@@ -16,7 +27,7 @@ export default async function fetchStatusCheck(): Promise<number | undefined> {
   }
   for await (const response of octokit.paginate.iterator(
     'GET /repos/{owner}/{repo}/commits/{ref}/check-runs',
-    parameters,
+    checkParameters,
   )) {
     console.log("process.env['GITHUB_EVENT_NAME']", process.env['GITHUB_EVENT_NAME'])
     console.log("process.env['GITHUB_JOB']", process.env['GITHUB_JOB'])
