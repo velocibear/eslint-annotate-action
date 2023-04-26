@@ -21427,6 +21427,7 @@ const failOnWarningInput = core.getInput('fail-on-warning') || 'false';
 const failOnErrorInput = core.getInput('fail-on-error') || 'true';
 const markdownReportOnStepSummaryInput = core.getInput('markdown-report-on-step-summary') || 'false';
 const checkName = core.getInput('check-name') || 'ESLint Report Analysis';
+const jobName = core.getInput('job-name');
 const failOnWarning = failOnWarningInput === 'true';
 const failOnError = failOnErrorInput === 'true';
 const markdownReportOnStepSummary = markdownReportOnStepSummaryInput === 'true';
@@ -21459,6 +21460,7 @@ exports["default"] = {
     failOnError,
     markdownReportOnStepSummary,
     unusedDirectiveMessagePrefix,
+    jobName,
 };
 
 
@@ -21509,21 +21511,24 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const constants_1 = __importDefault(__nccwpck_require__(9042));
-const { OWNER, REPO, SHA, octokit } = constants_1.default;
+const { OWNER, REPO, SHA, octokit, jobName } = constants_1.default;
 /**
  * Fetch GitHub check run
  * @return the check ID of the created run
  */
 async function fetchStatusCheck() {
-    const jobParameters = {
-        owner: OWNER,
-        repo: REPO,
-        run_id: Number(process.env['GITHUB_RUN_ID']),
-        per_page: 100,
-    };
-    const response = await octokit.paginate('GET /repos/{owner}/{repo}/actions/runs/{run_id}/jobs', jobParameters);
-    console.log('response', response);
-    console.log('jobs', response.jobs);
+    //   const jobParameters = {
+    //     owner: OWNER,
+    //     repo: REPO,
+    //     run_id: Number(process.env['GITHUB_RUN_ID']),
+    //     per_page: 100,
+    //     headers: {
+    //       'X-GitHub-Api-Version': '2022-11-28',
+    //     },
+    //   }
+    //   const response = await octokit.paginate('GET /repos/{owner}/{repo}/actions/runs/{run_id}/jobs', jobParameters)
+    //   console.log('response', response)
+    //   console.log('jobs', response.jobs)
     const checkParameters = {
         owner: OWNER,
         repo: REPO,
@@ -21533,11 +21538,7 @@ async function fetchStatusCheck() {
         },
     };
     for await (const response of octokit.paginate.iterator('GET /repos/{owner}/{repo}/commits/{ref}/check-runs', checkParameters)) {
-        console.log("process.env['GITHUB_EVENT_NAME']", process.env['GITHUB_EVENT_NAME']);
-        console.log("process.env['GITHUB_JOB']", process.env['GITHUB_JOB']);
-        console.log("process.env['GITHUB_RUN_ID']", process.env['GITHUB_RUN_ID']);
-        console.log('response.data', response.data);
-        const currentCheck = response.data.find((check) => check.name === process.env['GITHUB_JOB']);
+        const currentCheck = response.data.find((check) => check.name === jobName);
         console.log(currentCheck);
         // for (const check of response.data.check_runs) {
         //   console.log('check', check)
