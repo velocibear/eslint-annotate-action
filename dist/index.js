@@ -21515,7 +21515,6 @@ const { OWNER, REPO, SHA, octokit } = constants_1.default;
  * @return the check ID of the created run
  */
 async function fetchStatusCheck() {
-    var _a;
     const parameters = {
         owner: OWNER,
         repo: REPO,
@@ -21525,11 +21524,13 @@ async function fetchStatusCheck() {
         },
     };
     for await (const response of octokit.paginate.iterator('GET /repos/{owner}/{repo}/commits/{ref}/check-runs', parameters)) {
-        for (const check of response.data.check_runs) {
-            console.log('check', check);
-        }
-        // Return the status check ID
-        return (_a = response.data.check_runs) === null || _a === void 0 ? void 0 : _a[0].id;
+        console.log('response', response);
+        console.log('responseData', response.data);
+        // for (const check of response.data.check_runs) {
+        //   console.log('check', check)
+        // }
+        // // Return the status check ID
+        // return response.data.check_runs?.[0].id as number
     }
     return;
 }

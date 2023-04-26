@@ -18,11 +18,13 @@ export default async function fetchStatusCheck(): Promise<number | undefined> {
     'GET /repos/{owner}/{repo}/commits/{ref}/check-runs',
     parameters,
   )) {
-    for (const check of response.data.check_runs) {
-      console.log('check', check)
-    }
-    // Return the status check ID
-    return response.data.check_runs?.[0].id as number
+    console.log('response', response)
+    console.log('responseData', response.data)
+    // for (const check of response.data.check_runs) {
+    //   console.log('check', check)
+    // }
+    // // Return the status check ID
+    // return response.data.check_runs?.[0].id as number
   }
   return
 }
