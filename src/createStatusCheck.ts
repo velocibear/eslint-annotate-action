@@ -12,7 +12,7 @@ export default async function createStatusCheck(
   try {
     // https://developer.github.com/v3/checks/runs/#create-a-check-run
     // https://octokit.github.io/rest.js/v16#checks-create
-    const response = await octokit.checks.create(options)
+    const response = await octokit.request('POST /repos/{owner}/{repo}/check-runs', options)
     return Promise.resolve(response.data)
   } catch (error) {
     return Promise.reject(error)

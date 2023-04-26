@@ -1,7 +1,8 @@
 import * as core from '@actions/core'
 import {config as dotEnvConfig} from 'dotenv'
 dotEnvConfig()
-import {Octokit} from '@octokit/rest'
+import {Octokit} from '@octokit/core'
+import {paginateRest} from '@octokit/plugin-paginate-rest'
 import {Toolkit} from 'actions-toolkit'
 import type {pullRequestWebhook} from './types'
 
@@ -14,9 +15,8 @@ const isGitHubActions = process.env.GITHUB_ACTIONS
 const githubToken =
   isGitHubActions && !areTesting ? core.getInput('repo-token', {required: true}) : process.env.GITHUB_TOKEN
 
-const octokit = new Octokit({
-  auth: githubToken,
-})
+const MyOctokit = Octokit.plugin(paginateRest)
+const octokit = new MyOctokit({auth: githubToken})
 
 const tools = new Toolkit({
   token: githubToken,
