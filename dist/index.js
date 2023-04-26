@@ -20458,7 +20458,7 @@ const { OWNER, REPO, SHA, octokit } = constants_1.default;
  */
 async function fetchStatusCheck() {
     var _a;
-    const check = await octokit.request('GET /repos/{owner}/{repo}/commits/{ref}/check-runs', {
+    const checks = await octokit.request('GET /repos/{owner}/{repo}/commits/{ref}/check-runs', {
         owner: OWNER,
         repo: REPO,
         ref: SHA,
@@ -20466,9 +20466,11 @@ async function fetchStatusCheck() {
             'X-GitHub-Api-Version': '2022-11-28',
         },
     });
-    console.log('check', check);
+    for (const check in checks) {
+        console.log('check', check);
+    }
     // Return the status check ID
-    return (_a = check.data.check_runs) === null || _a === void 0 ? void 0 : _a[0].id;
+    return (_a = checks.data.check_runs) === null || _a === void 0 ? void 0 : _a[0].id;
 }
 exports["default"] = fetchStatusCheck;
 
