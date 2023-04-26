@@ -21524,8 +21524,9 @@ async function fetchStatusCheck() {
         },
     };
     for await (const response of octokit.paginate.iterator('GET /repos/{owner}/{repo}/commits/{ref}/check-runs', parameters)) {
-        console.log('response', response);
-        console.log('responseData', response.data);
+        console.log("process.env['GITHUB_JOB']", process.env['GITHUB_JOB']);
+        const currentCheck = response.data.find((check) => check.name === process.env['GITHUB_JOB']);
+        console.log(currentCheck);
         // for (const check of response.data.check_runs) {
         //   console.log('check', check)
         // }
