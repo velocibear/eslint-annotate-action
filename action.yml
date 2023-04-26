@@ -28,6 +28,9 @@ inputs:
     description: "Whether to show a markdown report in the step summary."
     default: 'false'
     required: false
+  job-name:
+    description: "Full name of Github job"
+    required: false
 runs:
   using: "node16"
   main: "dist/index.js"

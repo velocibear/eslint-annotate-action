@@ -42,6 +42,7 @@ const failOnWarningInput = core.getInput('fail-on-warning') || 'false'
 const failOnErrorInput = core.getInput('fail-on-error') || 'true'
 const markdownReportOnStepSummaryInput = core.getInput('markdown-report-on-step-summary') || 'false'
 const checkName = core.getInput('check-name') || 'ESLint Report Analysis'
+const jobName = core.getInput('job-name')
 const failOnWarning = failOnWarningInput === 'true'
 const failOnError = failOnErrorInput === 'true'
 const markdownReportOnStepSummary = markdownReportOnStepSummaryInput === 'true'
@@ -78,4 +79,5 @@ export default {
   failOnError,
   markdownReportOnStepSummary,
   unusedDirectiveMessagePrefix,
+  jobName,
 }
