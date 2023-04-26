@@ -29,8 +29,6 @@ Toolkit.run(async (tools) => {
     // Fetch status check for current job
     const checkId = await fetchStatusCheck()
 
-    console.log('checkId', checkId)
-
     // Add all the annotations to the status check
     await addAnnotationsToStatusCheck(annotations, checkId)
 
