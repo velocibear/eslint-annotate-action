@@ -20467,7 +20467,7 @@ async function fetchStatusCheck() {
         },
     });
     console.log(response);
-    for (const check in response.data.check_runs) {
+    for (const check of response.data.check_runs) {
         console.log('check', check);
     }
     // Return the status check ID

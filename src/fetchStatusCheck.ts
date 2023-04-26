@@ -17,7 +17,7 @@ export default async function fetchStatusCheck(): Promise<number> {
 
   console.log(response)
 
-  for (const check in response.data.check_runs) {
+  for (const check of response.data.check_runs) {
     console.log('check', check)
   }
 
