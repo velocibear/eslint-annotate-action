@@ -29,7 +29,7 @@ Toolkit.run(async (tools) => {
     // Fetch status check for current job
     const checkId = await fetchStatusCheck()
 
-    // Fail if check ID could not be found
+    // Fail if status check ID could not be found
     if (checkId === undefined) {
       tools.exit.failure('Could not find ID for status check. Verify you are supplying the correct job name.')
       process.exit(1)
