@@ -29,6 +29,12 @@ Toolkit.run(async (tools) => {
     // Fetch status check for current job
     const checkId = await fetchStatusCheck()
 
+    // Fail if check ID could not be found
+    if (checkId === undefined) {
+      tools.exit.failure('Could not find ID for status check. Verify you are supplying the correct job name.')
+      process.exit(1)
+    }
+
     // Add all the annotations to the status check
     await addAnnotationsToStatusCheck(annotations, checkId)
 

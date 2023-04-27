@@ -21634,7 +21634,6 @@ function getAnalyzedReport(files) {
                 errorText += messageText;
             }
             // Log out errors to make it easy for users to find out what's going on
-            toolkit.log.info(`Error: ${messageText}`);
             toolkit.log.error(`Error: ${messageText}`);
         }
     }
@@ -21818,6 +21817,11 @@ actions_toolkit_1.Toolkit.run(async (tools) => {
     try {
         // Fetch status check for current job
         const checkId = await (0, fetchStatusCheck_1.default)();
+        // Fail if check ID could not be found
+        if (checkId === undefined) {
+            tools.exit.failure('Could not find ID for status check. Verify you are supplying the correct job name.');
+            process.exit(1);
+        }
         // Add all the annotations to the status check
         await (0, addAnnotationsToStatusCheck_1.default)(annotations, checkId);
         // Add report to job summary
